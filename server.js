@@ -16,8 +16,18 @@ require('./services/mosquitto')
 // Define a simple route for testing
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello, Clinic IoT Backend is running!');
 });
+
+// Import and use routers
+
+const routersRouter = require('./routes/routers');
+const devicesRouter = require('./routes/devices');
+const recordsRouter = require('./routes/records');
+
+app.use('/routers', routersRouter);
+app.use('/devices', devicesRouter);
+app.use('/records', recordsRouter);
 
 // Start the server
 
