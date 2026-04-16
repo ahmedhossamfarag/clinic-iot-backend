@@ -4,6 +4,7 @@ const express = require('express');
 
 // Configuration
 const SERVER_PORT = env.SERVER_PORT;
+const SERVER_HOST = env.SERVER_HOST;
 
 // Create an Express application
 
@@ -31,6 +32,6 @@ app.use('/records', recordsRouter);
 
 // Start the server
 
-app.listen(SERVER_PORT, () => {
-  console.log('Server is running on port 3000');
+app.listen(SERVER_PORT, SERVER_HOST, () => {
+  console.log(`Server is running on ${SERVER_HOST}:${SERVER_PORT}`);
 });
