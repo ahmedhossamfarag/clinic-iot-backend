@@ -3,7 +3,7 @@ const { supabase } = require('../services/supabase');
 async function getAllDevices(req, res) {
     try {
         const { data, error } = await supabase
-            .from('devices')
+            .from('devices_routers')
             .select('*');
         if (error) {
             throw error;
