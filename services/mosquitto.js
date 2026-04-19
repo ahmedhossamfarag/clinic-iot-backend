@@ -1,6 +1,8 @@
 require('dotenv').config();
 const env = process.env;
 const mqtt = require('mqtt');
+const { validate } = require('uuid');
+const { supabase } = require('./supabase');
 
 // Configuration
 
@@ -30,6 +32,17 @@ client.on('connect', () => {
 
 // Handle incoming MQTT messages
 
-client.on('message', (topic, message) => {
-  console.log(`Received message on topic ${topic}: ${message.toString()}`);
+client.on('message', async (topic, message) => {
+  if (topic === MQTT_TOPIC) {
+    try {
+      const data = JSON.parse(message.toString());
+      if (data && validate(data.router_id) && validate(data.device_id)) {
+        const { router_id, device_id } = data;
+        await supabase
+          .from('records')
+          .insert({ router_id, device_id })
+      }
+    } catch (error) {
+    }
+  }
 });
