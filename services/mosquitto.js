@@ -2,7 +2,6 @@ require('dotenv').config();
 const env = process.env;
 const mqtt = require('mqtt');
 const { validate } = require('uuid');
-const { supabase } = require('./supabase');
 
 // Configuration
 
@@ -38,9 +37,8 @@ client.on('message', async (topic, message) => {
       const data = JSON.parse(message.toString());
       if (data && validate(data.router_id) && validate(data.device_id)) {
         const { router_id, device_id } = data;
-        await supabase
-          .from('records')
-          .insert({ router_id, device_id })
+        // Insert the record into the database
+        // TODO
       }
     } catch (error) {
     }
