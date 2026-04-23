@@ -1,4 +1,3 @@
-require('dotenv').config();
 const env = process.env;
 const mqtt = require('mqtt');
 const { validate } = require('uuid');
