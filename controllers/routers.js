@@ -78,7 +78,7 @@ async function getRouterHourlySessionsDuration(req, res) {
         if (result.error) {
             throw result.error;
         }
-        res.json({ hourly_sessions_duration: result.rows })
+        res.json({ hourly_sessions: result.rows })
     } catch (error) {
         console.error('Get router hourly sessions error: ', error)
         res.status(500).json({ error: 'Failed to get router hourly sessions' })

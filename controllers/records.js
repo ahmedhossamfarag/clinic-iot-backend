@@ -9,7 +9,7 @@ async function getHourlyRecordsCount(req, res) {
         if (result.error) {
             throw result.error;
         }
-        res.json({ hourly_records_count: result.rows })
+        res.json({ records_hourly: result.rows })
     } catch (error) {
         res.status(500).json({ error: 'Failed to get hourly records' })
     }
@@ -22,7 +22,7 @@ async function getHourlyPatientsCount(req, res) {
         if (result.error) {
             throw result.error;
         }
-        res.json({ hourly_patients_count: result.rows })
+        res.json({ records_hourly: result.rows })
     } catch (error) {
         res.status(500).json({ error: 'Failed to get hourly patients' })
     }
@@ -35,7 +35,7 @@ async function getRouterHourlyTotalSessionsDuration(req, res) {
         if (result.error) {
             throw result.error;
         }
-        res.json({ hourly_sessions_duration: result.rows })
+        res.json({ hourly_sessions: result.rows })
     } catch (error) {
         res.status(500).json({ error: 'Failed to get router hourly total sessions duration' })
     }
