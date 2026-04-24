@@ -90,9 +90,9 @@ async function insertRouter(req, res) {
         const hospital_id = arrToBuffer(req.hospital.id.data);
         const { router_id, name, location_x, location_y } = req.body;
         // Check if router already exists
-        const existsResult = await db.query(queries.selectRouterById, { router_id: uuidToBuffer(router_id), hospital_id });
+        const existsResult = await db.query(queries.selectRouterByName, { name, hospital_id });
         if (existsResult.error || existsResult.rows.length) {
-            return res.status(400).json({ error: 'Router already exists' });
+            return res.status(400).json({ error: 'Router name already exists' });
         }
         // Insert router
         const result = await db.query(queries.insertRouter, { hospital_id, router_id: uuidToBuffer(router_id), name, location_x, location_y }, { autoCommit: true });

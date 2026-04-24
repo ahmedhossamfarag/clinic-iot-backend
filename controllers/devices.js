@@ -33,9 +33,9 @@ async function insertDevice(req, res) {
         const hospital_id = arrToBuffer(req.hospital.id.data);
         const { device_id, name } = req.body;
         // Check if device already exists
-        const existsResult = await db.query(queries.selectDeviceById, { hospital_id, device_id: uuidToBuffer(device_id) });
+        const existsResult = await db.query(queries.selectDeviceByName, { hospital_id, name });
         if ( existsResult.error || existsResult.rows.length) {
-            return res.status(400).json({ error: 'Device already exists' });
+            return res.status(400).json({ error: 'Device name already exists' });
         }
         // Insert device
         const result = await db.query(queries.insertDevice, { hospital_id, device_id: uuidToBuffer(device_id), name }, { autoCommit: true });
