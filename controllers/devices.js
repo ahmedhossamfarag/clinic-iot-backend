@@ -48,9 +48,24 @@ async function insertDevice(req, res) {
     }
 }
 
+async function releaseDevice(req, res) {
+    try{
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const device_id = uuidToBuffer(req.params.id);
+        const result = await db.query(queries.updateDeviceHolder, { device_id, hospital_id, patient_id: null}, { autoCommit: true });
+        if (result.error) {
+            throw result.error;
+        }
+        res.json({ message: 'Device released successfully' })
+    }catch (error) {
+        res.status(500).json({ error: 'Failed to release device' })
+    }
+}
+
 
 module.exports = {
     getAllDevices,
     getAllDevicesWithRoutersInfo,
     insertDevice,
+    releaseDevice,
 }
