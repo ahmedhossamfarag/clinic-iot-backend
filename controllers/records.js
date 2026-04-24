@@ -15,7 +15,7 @@ async function getHourlyRecordsCount(req, res) {
     }
 }
 
-async function getHourlyDevicesCount(req, res) {
+async function getHourlyPatientsCount(req, res) {
     try {
         const { data, error } = await supabase
             .from('hourly_devices')
@@ -47,6 +47,6 @@ async function getRouterHourlyTotalSessionsDuration(req, res) {
 
 module.exports = {
     getHourlyRecordsCount,
-    getHourlyDevicesCount,
+    getHourlyPatientsCount,
     getRouterHourlyTotalSessionsDuration,
 }

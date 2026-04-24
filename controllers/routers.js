@@ -82,10 +82,15 @@ async function getRouterHourlySessionsDuration(req, res) {
     }
 }
 
+async function insertRouter(req, res) {
+    // TODO
+}
+
 module.exports = {
     getAllRouters,
     getRoutersMap,
     getRouterById,
     getRouterConnectedDevices,
     getRouterHourlySessionsDuration,
+    insertRouter,
 }

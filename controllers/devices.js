@@ -15,6 +15,17 @@ async function getAllDevices(req, res) {
     }
 }
 
+async function getAllDevicesWithRoutersInfo(req, res) {
+    // TODO
+}
+
+async function insertDevice(req, res) {
+    // TODO
+}
+
+
 module.exports = {
     getAllDevices,
+    getAllDevicesWithRoutersInfo,
+    insertDevice,
 }
