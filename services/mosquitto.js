@@ -3,6 +3,7 @@ const mqtt = require('mqtt');
 const { validate } = require('uuid');
 const queries = require('../controllers/queries/records');
 const db = require('../services/oracle-db');
+const { uuidToBuffer } = require('../controllers/converters/converters')
 
 
 // Configuration
@@ -41,8 +42,10 @@ async function onMQTTMessage(topic, message) {
   if (topic === MQTT_TOPIC) {
     try {
       const data = JSON.parse(message.toString());
-      if (data && validate(data.router_id) && validate(data.device_id)) {
-        const { router_id, device_id, rssi } = data;
+      if (data && validate(data.router_id) && validate(data.device_id) && data.rssi) {
+        const router_id = uuidToBuffer(data.router_id);
+        const device_id = uuidToBuffer(data.device_id);
+        const rssi = data.rssi;
         const { error, rows } = await db.query(queries.selectRecent2Records, { device_id })
         if (!error)
           if (!rows.length) {
