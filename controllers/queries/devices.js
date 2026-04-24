@@ -10,7 +10,7 @@ const selectDevicesRouters = `
 
 const selectDeviceById = `
     SELECT * FROM devices
-    WHERE device_id = :device_id
+    WHERE id = :device_id
     AND hospital_id = :hospital_id
 `;
 
@@ -21,14 +21,14 @@ const selectDeviceByName = `
 `;
 
 const insertDevice = `
-    INSERT INTO devices (device_id, hospital_id, name)
+    INSERT INTO devices (id, hospital_id, name)
     VALUES (:device_id, :hospital_id, :name)
 `;
 
 const updateDeviceHolder = `
     UPDATE devices
     SET patient_id = :patient_id
-    WHERE device_id = :device_id
+    WHERE id = :device_id
     AND hospital_id = :hospital_id
 `;
 
