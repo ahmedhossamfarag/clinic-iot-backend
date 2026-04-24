@@ -1,26 +1,51 @@
-const { supabase } = require('../services/supabase');
+const queries = require("../controllers/queries/devices");
+const db = require("../services/oracle-db");
+const { arrToBuffer, uuidToBuffer } = require("../controllers/converters/converters");
 
 async function getAllDevices(req, res) {
     try {
-        const { data, error } = await supabase
-            .from('devices_routers')
-            .select('*');
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectDevices, { hospital_id }, { maxRows: 100 });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ devices: data })
+        res.json({ devices: result.rows })
     } catch (error) {
-        console.error('Get all devices error: ', error)
         res.status(500).json({ error: 'Failed to get devices' })
     }
 }
 
 async function getAllDevicesWithRoutersInfo(req, res) {
-    // TODO
+    try {
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectDevicesRouters, { hospital_id }, { maxRows: 100 });
+        if (result.error) {
+            throw result.error;
+        }
+        res.json({ devices: result.rows })
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to get devices' })
+    }
 }
 
 async function insertDevice(req, res) {
-    // TODO
+    try{
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const { device_id, name } = req.body;
+        // Check if device already exists
+        const existsResult = await db.query(queries.selectDeviceById, { hospital_id, device_id: uuidToBuffer(device_id) });
+        if ( existsResult.error || existsResult.rows.length) {
+            return res.status(400).json({ error: 'Device already exists' });
+        }
+        // Insert device
+        const result = await db.query(queries.insertDevice, { hospital_id, device_id: uuidToBuffer(device_id), name }, { autoCommit: true });
+        if (result.error) {
+            throw result.error;
+        }
+        res.json({ message: 'Device inserted successfully' })
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to insert device' })
+    }
 }
 
 

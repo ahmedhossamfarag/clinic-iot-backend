@@ -1,81 +1,76 @@
-const { supabase } = require('../services/supabase')
+const queries = require("../controllers/queries/routers");
+const db = require("../services/oracle-db");
+const { arrToBuffer, uuidToBuffer } = require("../controllers/converters/converters");
 
 async function getAllRouters(req, res) {
     try {
-        const { data, error } = await supabase
-            .from('routers')
-            .select('*');
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectRouters, { hospital_id });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ routers: data })
+        res.json({ routers: result.rows })
     } catch (error) {
-        console.error('Get all routers error: ', error)
         res.status(500).json({ error: 'Failed to get routers' })
     }
 }
 
 async function getRoutersMap(req, res) {
     try {
-        const { data, error } = await supabase
-            .from('routers_map')
-            .select('*');
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectRoutersMap, { hospital_id });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ routers_map: data })
+        res.json({ routers_map: result.rows })
     } catch (error) {
-        console.error('Get routers map error: ', error)
         res.status(500).json({ error: 'Failed to get routers map' })
     }
 }
 
 async function getRouterById(req, res) {
-    const { id } = req.params;
     try {
-        const { data, error } = await supabase
-            .from('routers')
-            .select('*')
-            .eq('id', id)
-            .single();
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const router_id = arrToBuffer(req.params.id);
+        const result = await db.query(queries.selectRouterById, { router_id, hospital_id });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ router: data })
+        res.json({ router: result.rows[0] })
     } catch (error) {
-        console.error('Get router by ID error: ', error)
         res.status(500).json({ error: 'Failed to get router' })
     }
 }
 
 async function getRouterConnectedDevices(req, res) {
-    const { id } = req.params;
     try {
-        const { data, error } = await supabase
-            .from('devices_routers')
-            .select('*')
-            .eq('router_id', id);
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const router_id = arrToBuffer(req.params.id);
+        const result = await db.query(queries.selectRouterConnectedDevices, { router_id, hospital_id }, { maxRows: 100 });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ devices: data })
+        res.json({ devices: result.rows })
     } catch (error) {
-        console.error('Get router connected devices error: ', error)
         res.status(500).json({ error: 'Failed to get router connected devices' })
     }
 }
 
 async function getRouterHourlySessionsDuration(req, res) {
-    const { id } = req.params;
     try {
-        const { data, error } = await supabase
-            .from('routers_hourly_sessions')
-            .select('*')
-            .eq('router_id', id);
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const router_id = arrToBuffer(req.params.id);
+        // Check if router exists and belongs to the hospital
+        const existsResult = await db.query(queries.selectRouterById, { router_id, hospital_id });
+        if (existsResult.error || !existsResult.rows.length) {
+            return res.status(404).json({ error: 'Router not found' });
         }
-        res.json({ hourly_sessions: data })
+        // Get router hourly sessions duration
+        const result = await db.query(queries.selectRoutersHourlySessions, { router_id, hospital_id }, { maxRows: 100 });
+        if (result.error) {
+            throw result.error;
+        }
+        res.json({ hourly_sessions_duration: result.rows })
     } catch (error) {
         console.error('Get router hourly sessions error: ', error)
         res.status(500).json({ error: 'Failed to get router hourly sessions' })
@@ -83,7 +78,23 @@ async function getRouterHourlySessionsDuration(req, res) {
 }
 
 async function insertRouter(req, res) {
-    // TODO
+    try {
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const { router_id, name, location_x, location_y } = req.body;
+        // Check if router already exists
+        const existsResult = await db.query(queries.selectRouterById, { router_id: uuidToBuffer(router_id), hospital_id });
+        if (existsResult.error || existsResult.rows.length) {
+            return res.status(400).json({ error: 'Router already exists' });
+        }
+        // Insert router
+        const result = await db.query(queries.insertRouter, { hospital_id, router_id: uuidToBuffer(router_id), name, location_x, location_y }, { autoCommit: true });
+        if (result.error) {
+            throw result.error;
+        }
+        res.json({ message: 'Router inserted successfully' })
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to insert router' })
+    }
 }
 
 module.exports = {

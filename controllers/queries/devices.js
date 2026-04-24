@@ -1,3 +1,8 @@
+const selectDevices = `
+    SELECT * FROM devices
+    WHERE hospital_id = :hospital_id
+`;
+
 const selectDevicesRouters = `
     SELECT * FROM devices_routers
     WHERE hospital_id = :hospital_id
@@ -27,10 +32,18 @@ const updateDeviceHolder = `
     AND hospital_id = :hospital_id
 `;
 
+const deleteDevices = `
+    DELETE FROM devices
+    WHERE hospital_id = :hospital_id
+`;
+
+
 module.exports = {
+    selectDevices,
     selectDevicesRouters,
     selectDeviceById,
     selectDeviceByName,
     insertDevice,
-    updateDeviceHolder
+    updateDeviceHolder,
+    deleteDevices
 };

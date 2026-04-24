@@ -20,9 +20,16 @@ const insertPatient = `
     VALUES (:patient_id, :hospital_id, :name)
 `;
 
+const deletePatients = `
+    DELETE FROM patients
+    WHERE hospital_id = :hospital_id
+`;
+
+
 module.exports = {
     selectPatients,
     selectPatientById,
     selectPatientRoutersSessions,
-    insertPatient
+    insertPatient,
+    deletePatients
 };

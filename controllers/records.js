@@ -1,46 +1,42 @@
-const { supabase } = require('../services/supabase');
+const queries = require("../controllers/queries/records");
+const db = require("../services/oracle-db");
+const { arrToBuffer } = require("../controllers/converters/converters");
 
 async function getHourlyRecordsCount(req, res) {
     try {
-        const { data, error } = await supabase
-            .from('hourly_records')
-            .select('*');
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectHourlyRecords, { hospital_id }, { maxRows: 100 });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ records_hourly: data })
+        res.json({ hourly_records_count: result.rows })
     } catch (error) {
-        console.error('Get hourly records error: ', error)
         res.status(500).json({ error: 'Failed to get hourly records' })
     }
 }
 
 async function getHourlyPatientsCount(req, res) {
     try {
-        const { data, error } = await supabase
-            .from('hourly_devices')
-            .select('*');
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectHourlyPatients, { hospital_id }, { maxRows: 100 });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ records_hourly: data })
+        res.json({ hourly_patients_count: result.rows })
     } catch (error) {
-        console.error('Get hourly devices error: ', error)
-        res.status(500).json({ error: 'Failed to get hourly devices' })
+        res.status(500).json({ error: 'Failed to get hourly patients' })
     }
 }
 
 async function getRouterHourlyTotalSessionsDuration(req, res) {
     try {
-        const { data, error } = await supabase
-            .from('devices_hourly_sessions')
-            .select('*');
-        if (error) {
-            throw error;
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectPatientsHourlySessions, { hospital_id }, { maxRows: 100 });
+        if (result.error) {
+            throw result.error;
         }
-        res.json({ hourly_sessions: data })
+        res.json({ hourly_sessions_duration: result.rows })
     } catch (error) {
-        console.error('Get router hourly total sessions duration error: ', error)
         res.status(500).json({ error: 'Failed to get router hourly total sessions duration' })
     }
 }

@@ -8,7 +8,7 @@ const selectHospitalByHospitalId = `
 `;
 
 const selectHospital = `
-    SELECT id, name, hospital_id, admin_name, admin_email, blueprint
+    SELECT *
     FROM hospitals WHERE id = :id
 `;
 
