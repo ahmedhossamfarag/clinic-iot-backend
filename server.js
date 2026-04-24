@@ -48,12 +48,6 @@ app.get('/', (req, res) => {
   app.use('/devices', authMiddleware, devicesRouter);
   app.use('/records', authMiddleware, recordsRouter);
 
-  app.get('/test', authMiddleware, async (req, res) => {
-    res.json(req.hospital);
-    const response = await db.query("SELECT * FROM HOSPITALS WHERE ID = :id", { id: Buffer.from(req.hospital.id.data) }, { maxRows: 1 });
-    console.log(response.rows[0]);
-  });
-
   // Start the server
 
   app.listen(SERVER_PORT, SERVER_HOST, () => {
