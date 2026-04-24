@@ -1,10 +1,13 @@
 const { Router } = require("express");
-const { updateSettings, updateBlueprint, resetRecords, deleteAccount} = require("../controllers/settings");
+const { updateSettings, updateBlueprint, resetRecords, deleteAccount, getBlueprint } = require("../controllers/settings");
+const multer = require("multer");
 
 const router = new Router();
+const upload = multer();
 
 router.put("/", updateSettings);
-router.put("/blueprint", updateBlueprint);
+router.put("/blueprint", upload.single("image"), updateBlueprint);
+router.get("/blueprint", getBlueprint);
 router.delete("/records", resetRecords);
 router.delete("/account", deleteAccount);
 

@@ -5,6 +5,7 @@ const routerQueries = require("../controllers/queries/routers");
 const deviceQueries = require("../controllers/queries/devices");
 const db = require("../services/oracle-db");
 const { arrToBuffer } = require("../controllers/converters/converters");
+const { uploadImage, getImage, createImagePAR } = require("../services/oracle-obj");
 
 
 async function updateSettings(req, res) {
@@ -43,11 +44,46 @@ async function updateSettings(req, res) {
 }
 
 async function updateBlueprint(req, res) {
-    // TODO
+    try {
+        const file = req.file;
+
+        const ref = `${Date.now()}-${file.originalname}`;
+
+        await uploadImage(file.buffer, ref, file.mimetype);
+
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(authQueries.updateHospitalBlueprint, { id: hospital_id, blueprint: ref }, { autoCommit: true });
+        if (result.error) {
+            throw result.error;
+        }
+
+        res.status(200).json({ message: "Blueprint updated successfully" });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update blueprint' });
+    }
+}
+
+async function getBlueprint(req, res) {
+    try {
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(authQueries.selectHospitalBlueprint, { id: hospital_id });
+        if (result.error || !result.rows.length) {
+            throw result.error || new Error('Blueprint not found');
+        }
+
+        const ref = result.rows[0].BLUEPRINT;
+
+        const imgUri = await createImagePAR(ref);
+
+        res.status(200).json({ url: imgUri });
+
+    } catch (err) {
+        res.status(404).json({ error: "Image not found" });
+    }
 }
 
 async function resetRecords(req, res) {
-    try{
+    try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
         const result = await db.query(patientQueries.deletePatients, { hospital_id }, { autoCommit: true });
         if (result.error) {
@@ -87,6 +123,7 @@ async function deleteAccount(req, res) {
 module.exports = {
     updateSettings,
     updateBlueprint,
+    getBlueprint,
     resetRecords,
     deleteAccount
 };
