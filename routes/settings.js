@@ -3,7 +3,7 @@ const { updateSettings, updateBlueprint, resetRecords, deleteAccount} = require(
 
 const router = new Router();
 
-router.put("/settings", updateSettings);
+router.put("/", updateSettings);
 router.put("/blueprint", updateBlueprint);
 router.delete("/records", resetRecords);
 router.delete("/account", deleteAccount);

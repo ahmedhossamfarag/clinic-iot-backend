@@ -20,7 +20,7 @@ const insertHospital = `
 
 const updateHospital = `
     UPDATE hospitals
-    SET name = :name, address = :address, hospital_id = :hospital_id, admin_name = :admin_name, admin_email = :admin_email, password = :password
+    SET name = :name, address = :address, admin_name = :admin_name, admin_email = :admin_email, password = :password
     WHERE id = :id
 `;
 

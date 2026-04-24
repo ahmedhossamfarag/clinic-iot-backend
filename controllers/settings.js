@@ -10,7 +10,7 @@ const { arrToBuffer } = require("../controllers/converters/converters");
 async function updateSettings(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const { name, address, admin_email, admin_email, password } = req.body;
+        const { name, address, admin_name, admin_email, password } = req.body;
         // Get current hospital settings
         const currentSettingsResult = await db.query(authQueries.selectHospital, { id: hospital_id });
         if (currentSettingsResult.error || !currentSettingsResult.rows.length) {
@@ -24,15 +24,19 @@ async function updateSettings(req, res) {
         }
         // Create update object with new values or keep current values if not provided
         const updateData = {
-            hospital_id,
+            id: hospital_id,
             name: name || currentSettings.NAME,
             address: address || currentSettings.ADDRESS,
-            admin_name: admin_email || currentSettings.ADMIN_NAME,
+            admin_name: admin_name || currentSettings.ADMIN_NAME,
             admin_email: admin_email || currentSettings.ADMIN_EMAIL,
             password: password || currentSettings.PASSWORD,
         };
         // Update hospital settings
         const result = await db.query(authQueries.updateHospital, updateData, { autoCommit: true });
+        if (result.error) {
+            throw result.error;
+        }
+        res.status(200).json({ message: "Settings updated successfully" });
     } catch (error) {
         res.status(500).json({ error: 'Failed to update settings' });
     }
@@ -70,7 +74,7 @@ async function deleteAccount(req, res) {
         if (result3.error) {
             throw result3.error;
         }
-        const result4 = await db.query(authQueries.deleteHospital, { hospital_id }, { autoCommit: true });
+        const result4 = await db.query(authQueries.deleteHospital, { id: hospital_id }, { autoCommit: true });
         if (result4.error) {
             throw result4.error;
         }
