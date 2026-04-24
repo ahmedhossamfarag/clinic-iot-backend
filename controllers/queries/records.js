@@ -19,6 +19,16 @@ const selectPatientsHourlySessions = `
     ORDER BY TRUNC (earliest_start_time, 'HH')
 `;
 
+const selectRecent2Records = `
+    SELECT records.*
+    FROM records
+    JOIN devices ON records.patient_id = devices.patient_id
+    WHERE devices.device_id = :device_id
+    ORDER BY timestamp DESC
+    LIMIT 2
+`;
+
+
 const insertRecord = `
     INSERT INTO records (router_id, patient_id, rssi)
     SELECT :router_id, patient_id, :rssi
@@ -26,9 +36,18 @@ const insertRecord = `
     WHERE device_id = :device_id
 `;
 
+const updateRecord = `
+    UPDATE records
+    SET router_id = :router_id, rssi = :rssi, timestamp = SYSTIMESTAMP
+    WHERE id = :record_id
+`;
+
+
 module.exports = {
     selectHourlyRecords,
     selectHourlyPatients,
     selectPatientsHourlySessions,
-    insertRecord
+    selectRecent2Records,
+    insertRecord,
+    updateRecord
 };
