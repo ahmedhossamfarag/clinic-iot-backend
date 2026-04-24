@@ -1,7 +1,12 @@
+const { validate } = require('uuid');
+
 function validateRouter(req, res, next) {
-    const { name, location_x, location_y } = req.body;
-    if (!name || !location_x || !location_y) {
+    const { router_id,name, location_x, location_y } = req.body;
+    if (!router_id || !name || !location_x || !location_y) {
         return res.status(400).json({ message: "All fields are required" });
+    }
+    if (!validate(router_id)) {
+        return res.status(400).json({ message: "Invalid router ID" });
     }
     if (name.length < 2 || name.length > 100) {
         return res.status(400).json({ message: "Router name must be between 2 and 100 characters" });
