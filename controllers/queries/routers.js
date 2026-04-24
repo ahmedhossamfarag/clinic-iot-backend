@@ -1,16 +1,31 @@
 const selectRouters = `
-    SELECT * FROM routers
+    SELECT
+        raw_to_uuid(id) AS "id",
+        name as "name",
+        location_x as "location_x",
+        location_y as "location_y"
+    FROM routers
     WHERE hospital_id = :hospital_id
 `;
 
 const selectRoutersMap = `
-    SELECT * FROM routers_map
+    SELECT
+        raw_to_uuid(id) AS "id",
+        location_x as "location_x",
+        location_y as "location_y",
+        connected_devices_count as "connected_devices_count"
+    FROM routers_map
     WHERE hospital_id = :hospital_id
 `;
 
 const selectRoutersHourlySessions = `
-    SELECT * FROM routers_hourly_sessions
-    WHERE router_id = :router_id
+    SELECT
+        raw_to_uuid(router_id) AS "router_id",
+        hour AS "hour",
+        sessions_count AS "sessions_count",
+        average_session_duration AS "average_session_duration"
+    FROM routers_hourly_sessions
+    WHERE routers_hourly_sessions.router_id = :router_id
 `;
 
 const selectRouterById = `
@@ -26,7 +41,14 @@ const selectRouterByName = `
 `;
 
 const selectRouterConnectedDevices = `
-    SELECT * FROM devices_routers
+    SELECT
+        raw_to_uuid(id) AS "id",
+        name AS "name",
+        raw_to_uuid(router_id) AS "router_id",
+        router_name AS "router_name",
+        holder_name AS "holder_name",
+        last_record_timestamp AS "last_record_timestamp"
+    FROM devices_routers
     WHERE hospital_id = :hospital_id
     AND router_id = :router_id
 `;

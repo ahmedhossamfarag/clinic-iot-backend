@@ -1,6 +1,6 @@
 const queries = require("../controllers/queries/routers");
 const db = require("../services/oracle-db");
-const { arrToBuffer, uuidToBuffer } = require("../controllers/converters/converters");
+const { arrToBuffer, uuidToBuffer, bufferToUuid } = require("../controllers/converters/converters");
 
 async function getAllRouters(req, res) {
     try {
@@ -31,12 +31,20 @@ async function getRoutersMap(req, res) {
 async function getRouterById(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const router_id = arrToBuffer(req.params.id);
+        const router_id = uuidToBuffer(req.params.id);
         const result = await db.query(queries.selectRouterById, { router_id, hospital_id });
         if (result.error) {
             throw result.error;
         }
-        res.json({ router: result.rows[0] })
+        const router = result.rows[0];
+        res.json({
+            router: {
+                id: bufferToUuid(router.ID),
+                name: router.NAME,
+                location_x: router.LOCATION_X,
+                location_y: router.LOCATION_Y
+            }
+        })
     } catch (error) {
         res.status(500).json({ error: 'Failed to get router' })
     }
@@ -45,7 +53,7 @@ async function getRouterById(req, res) {
 async function getRouterConnectedDevices(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const router_id = arrToBuffer(req.params.id);
+        const router_id = uuidToBuffer(req.params.id);
         const result = await db.query(queries.selectRouterConnectedDevices, { router_id, hospital_id }, { maxRows: 100 });
         if (result.error) {
             throw result.error;
@@ -59,14 +67,14 @@ async function getRouterConnectedDevices(req, res) {
 async function getRouterHourlySessionsDuration(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const router_id = arrToBuffer(req.params.id);
+        const router_id = uuidToBuffer(req.params.id);
         // Check if router exists and belongs to the hospital
         const existsResult = await db.query(queries.selectRouterById, { router_id, hospital_id });
         if (existsResult.error || !existsResult.rows.length) {
             return res.status(404).json({ error: 'Router not found' });
         }
         // Get router hourly sessions duration
-        const result = await db.query(queries.selectRoutersHourlySessions, { router_id, hospital_id }, { maxRows: 100 });
+        const result = await db.query(queries.selectRoutersHourlySessions, { router_id }, { maxRows: 100 });
         if (result.error) {
             throw result.error;
         }
