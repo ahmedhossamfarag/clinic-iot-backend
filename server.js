@@ -35,14 +35,18 @@ app.get('/', (req, res) => {
   // Import and use routers
   // TODO: Uncomment and implement the routers for routers, devices, and records
   const authRouter = require('./routes/auth');
-  // const routersRouter = require('./routes/routers');
-  // const devicesRouter = require('./routes/devices');
-  // const recordsRouter = require('./routes/records');
+  const settingsRouter = require('./routes/settings');
+  const patientsRouter = require('./routes/patients');
+  const routersRouter = require('./routes/routers');
+  const devicesRouter = require('./routes/devices');
+  const recordsRouter = require('./routes/records');
 
   app.use('/auth', authRouter);
-  // app.use('/routers', routersRouter);
-  // app.use('/devices', devicesRouter);
-  // app.use('/records', recordsRouter);
+  app.use('/settings', authMiddleware, settingsRouter);
+  app.use('/patients', authMiddleware, patientsRouter);
+  app.use('/routers', authMiddleware, routersRouter);
+  app.use('/devices', authMiddleware, devicesRouter);
+  app.use('/records', authMiddleware, recordsRouter);
 
   app.get('/test', authMiddleware, async (req, res) => {
     res.json(req.hospital);
