@@ -29,9 +29,9 @@ const selectRecent2Records = `
     SELECT records.*
     FROM records
     JOIN devices ON records.patient_id = devices.patient_id
-    WHERE devices.device_id = :device_id
-    ORDER BY timestamp DESC
-    LIMIT 2
+    WHERE devices.id = :device_id
+    ORDER BY records.timestamp DESC
+    FETCH FIRST 2 ROWS ONLY
 `;
 
 
@@ -39,12 +39,14 @@ const insertRecord = `
     INSERT INTO records (router_id, patient_id, rssi)
     SELECT :router_id, patient_id, :rssi
     FROM devices
-    WHERE device_id = :device_id
+    WHERE devices.id = :device_id
 `;
 
 const updateRecord = `
     UPDATE records
-    SET router_id = :router_id, rssi = :rssi, timestamp = SYSTIMESTAMP
+    SET router_id = :router_id,
+        rssi = :rssi,
+        timestamp = CURRENT_TIMESTAMP
     WHERE id = :record_id
 `;
 

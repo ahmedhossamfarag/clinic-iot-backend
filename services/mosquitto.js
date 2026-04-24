@@ -42,7 +42,7 @@ async function onMQTTMessage(topic, message) {
   if (topic === MQTT_TOPIC) {
     try {
       const data = JSON.parse(message.toString());
-      if (data && validate(data.router_id) && validate(data.device_id) && data.rssi) {
+      if (data && validate(data.router_id) && validate(data.device_id) && typeof data.rssi === 'number') {
         const router_id = uuidToBuffer(data.router_id);
         const device_id = uuidToBuffer(data.device_id);
         const rssi = data.rssi;
@@ -53,17 +53,17 @@ async function onMQTTMessage(topic, message) {
             await db.query(queries.insertRecord, { router_id, device_id, rssi }, { autoCommit: true });
           } else {
             // The device has records.
-            const timestamp = new Date(rows[0].TIMESTAMP).getTime();
-            const now = new Date().getTime();
+            const timestamp = new Date(rows[0].TIMESTAMP);
+            const now = new Date();
             if (now - timestamp < DEVICES_SIGNAL_PERIOD * 1000) {
               // This is a duplicate signal
-              if (rows[0].ROUTER_ID !== router_id && rows[0].RSSI < rssi){
+              if (!router_id.equals(rows[0].ROUTER_ID) && rows[0].RSSI < rssi){
                 // Assign the record to the the router with the highest RSSI
                 await db.query(queries.updateRecord, { router_id, rssi, record_id: rows[0].ID }, { autoCommit: true });
               }
             } else {
               // This is a new signal
-              if (rows.length >= 2 && rows[0].ROUTER_ID === router_id && rows[1].ROUTER_ID === router_id) {
+              if (rows.length >= 2 && router_id.equals(rows[0].ROUTER_ID) && router_id.equals(rows[1].ROUTER_ID)) {
                 // The device has at least two consecutive records from the current router.
                 await db.query(queries.updateRecord, { router_id, rssi, record_id: rows[0].ID }, { autoCommit: true });
               } else {
