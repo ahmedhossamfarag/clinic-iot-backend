@@ -63,7 +63,7 @@ async function onMQTTMessage(topic, message) {
               }
             } else {
               // This is a new signal
-              if (rows[0].ROUTER_ID === router_id && rows[1].ROUTER_ID === router_id) {
+              if (rows.length >= 2 && rows[0].ROUTER_ID === router_id && rows[1].ROUTER_ID === router_id) {
                 // The device has at least two consecutive records from the current router.
                 await db.query(queries.updateRecord, { router_id, rssi, record_id: rows[0].ID }, { autoCommit: true });
               } else {
