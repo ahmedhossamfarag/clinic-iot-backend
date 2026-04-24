@@ -1,10 +1,21 @@
 const selectDevices = `
-    SELECT * FROM devices
+    SELECT
+        raw_to_uuid(id) AS "id",
+        name AS "name",
+        raw_to_uuid(patient_id) AS "patient_id"
+    FROM devices
     WHERE hospital_id = :hospital_id
 `;
 
 const selectDevicesRouters = `
-    SELECT * FROM devices_routers
+    SELECT
+        raw_to_uuid(id) AS "id",
+        name AS "name",
+        raw_to_uuid(router_id) AS "router_id",
+        router_name AS "router_name",
+        holder_name AS "holder_name",
+        last_record_timestamp AS "last_record_timestamp"
+    FROM devices_routers
     WHERE hospital_id = :hospital_id
 `;
 
