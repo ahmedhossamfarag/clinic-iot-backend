@@ -65,7 +65,7 @@ async function updateBlueprint(req, res) {
 
         // Delete old blueprint
         const currentSettings = await db.query(authQueries.selectHospitalBlueprint, { id: hospital_id });
-        if (!currentSettings.error && currentSettings.rows.length) {
+        if (!currentSettings.error && currentSettings.rows.length && currentSettings.rows[0].BLUEPRINT) {
             await deleteImage(currentSettings.rows[0].BLUEPRINT);
         }
 
@@ -85,7 +85,7 @@ async function getBlueprint(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
         const result = await db.query(authQueries.selectHospitalBlueprint, { id: hospital_id });
-        if (result.error || !result.rows.length) {
+        if (result.error || !result.rows.length || !result.rows[0].BLUEPRINT) {
             throw result.error || new Error('Blueprint not found');
         }
 
@@ -129,7 +129,7 @@ async function deleteAccount(req, res) {
             throw result3.error;
         }
         const blueprint = await db.query(authQueries.selectHospitalBlueprint, { id: hospital_id });
-        if (!blueprint.error && blueprint.rows.length) {
+        if (!blueprint.error && blueprint.rows.length && blueprint.rows[0].BLUEPRINT) {
             await deleteImage(blueprint.rows[0].BLUEPRINT);
         }
         const result4 = await db.query(authQueries.deleteHospital, { id: hospital_id }, { autoCommit: true });
