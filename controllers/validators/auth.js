@@ -4,6 +4,11 @@ function validateSignup(req, res, next) {
     if (!hospital_id || !name || !address || !admin_name || !admin_email || !password) {
         return res.status(400).json({ message: "All fields are required" });
     }
+    if (typeof hospital_id !== "string" || typeof name !== "string" ||
+        typeof address !== "string" || typeof admin_name !== "string" ||
+        typeof admin_email !== "string" || typeof password !== "string") {
+        return res.status(400).json({ message: "All fields must be strings" });
+    }
     if (hospital_id.length < 3) {
         return res.status(400).json({ message: "Hospital ID must be at least 3 characters long" });
     }

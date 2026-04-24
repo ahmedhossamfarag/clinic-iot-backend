@@ -4,7 +4,7 @@ function validateSettings(req, res, next) {
         if (typeof name !== 'string' || name.trim() === '') {
             return res.status(400).json({ error: 'Name must be a non-empty string' });
         }
-        if (name.length < 2 || name.length > 50) {
+        if (name.trim().length < 2 || name.length > 50) {
             return res.status(400).json({ error: 'Name must be between 2 and 50 characters' });
         }
     }
@@ -12,7 +12,7 @@ function validateSettings(req, res, next) {
         if (typeof address !== 'string' || address.trim() === '') {
             return res.status(400).json({ error: 'Address must be a non-empty string' });
         }
-        if (address.length < 2 || address.length > 100) {
+        if (address.trim().length < 2 || address.length > 100) {
             return res.status(400).json({ error: 'Address must be between 2 and 100 characters' });
         }
     }
@@ -20,7 +20,7 @@ function validateSettings(req, res, next) {
         if (typeof admin_name !== 'string' || admin_name.trim() === '') {
             return res.status(400).json({ error: 'Admin name must be a non-empty string' });
         }
-        if (admin_name.length < 2 || admin_name.length > 50) {
+        if (admin_name.trim().length < 2 || admin_name.length > 50) {
             return res.status(400).json({ error: 'Admin name must be between 2 and 50 characters' });
         }
     }
@@ -37,7 +37,7 @@ function validateSettings(req, res, next) {
         if (typeof password !== 'string' || password.trim() === '') {
             return res.status(400).json({ error: 'Password must be a non-empty string' });
         }
-        if (password.length < 6 || password.length > 100) {
+        if (password.trim().length < 6 || password.length > 100) {
             return res.status(400).json({ error: 'Password must be between 6 and 100 characters' });
         }
     }
