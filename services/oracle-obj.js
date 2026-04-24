@@ -58,9 +58,19 @@ async function createImagePAR(objectName) {
     return `https://objectstorage.${region}.oraclecloud.com${uri}`
 }
 
+async function deleteImage(objectName) {
+    await client.deleteObject({
+        namespaceName,
+        bucketName,
+        objectName
+    });
+}
+
+
 
 module.exports = {
     uploadImage,
     getImage,
-    createImagePAR
+    createImagePAR,
+    deleteImage
 };
