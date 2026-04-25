@@ -31,10 +31,10 @@ async function updateSettings(req, res) {
             throw currentSettingsResult.error || new Error('Hospital not found');
         }
         const currentSettings = currentSettingsResult.rows[0];
-        // Encrypt password if provided
+        // Encrypt password if provided, otherwise keep current
+        let updatedPassword = currentSettings.PASSWORD;
         if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            password = hashedPassword;
+            updatedPassword = await bcrypt.hash(password, 10);
         }
         // Create update object with new values or keep current values if not provided
         const updateData = {
@@ -43,7 +43,7 @@ async function updateSettings(req, res) {
             address: address || currentSettings.ADDRESS,
             admin_name: admin_name || currentSettings.ADMIN_NAME,
             admin_email: admin_email || currentSettings.ADMIN_EMAIL,
-            password: password || currentSettings.PASSWORD,
+            password: updatedPassword,
         };
         // Update hospital settings
         const result = await db.query(authQueries.updateHospital, updateData, { autoCommit: true });
