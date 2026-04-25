@@ -8,6 +8,19 @@ const { arrToBuffer } = require("../controllers/converters/converters");
 const { uploadImage, getImage, createImagePAR, deleteImage } = require("../services/oracle-obj");
 
 
+async function getSettings(req, res) {
+    try{
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(authQueries.selectHospitalData, { id: hospital_id });
+        if (result.error || !result.rows.length) {
+            throw result.error || new Error('Hospital not found');
+        }
+        res.status(200).json({ settings: result.rows[0] });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to get settings' });
+    }
+}
+
 async function updateSettings(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
@@ -143,6 +156,7 @@ async function deleteAccount(req, res) {
 }
 
 module.exports = {
+    getSettings,
     updateSettings,
     updateBlueprint,
     getBlueprint,

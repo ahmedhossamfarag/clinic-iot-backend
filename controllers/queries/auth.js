@@ -12,6 +12,16 @@ const selectHospital = `
     FROM hospitals WHERE id = :id
 `;
 
+const selectHospitalData = `
+    SELECT
+        hospital_id AS "hospital_id",
+        name AS "name",
+        address AS "address",
+        admin_name AS "admin_name",
+        admin_email AS "admin_email"
+    FROM hospitals WHERE id = :id
+`;
+
 const selectHospitalBlueprint = `
     SELECT blueprint
     FROM hospitals WHERE id = :id
@@ -43,6 +53,7 @@ module.exports = {
     selectHospitalId,
     selectHospitalByHospitalId,
     selectHospital,
+    selectHospitalData,
     selectHospitalBlueprint,
     insertHospital,
     updateHospital,
