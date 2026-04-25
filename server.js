@@ -1,6 +1,7 @@
 require('dotenv').config();
 const env = process.env;
 const express = require('express');
+const cors = require('cors');
 const db = require('./services/oracle-db');
 const authMiddleware = require('./middleware/auth');
 
@@ -13,6 +14,7 @@ const SERVER_HOST = env.SERVER_HOST;
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 async function startServer() {
   // Initialize Oracle Database
