@@ -51,8 +51,31 @@ async function query(sql, binds = [], options = {}) {
     }
 }
 
+async function executeMany(sql, binds = [], options = {}) {
+    let connection
+
+    try {
+        connection = await oracledb.getConnection()
+
+        const result = await connection.executeMany(sql, binds, options)
+        return result
+    } catch (err) {
+        return { error: err }
+    } finally {
+        if (connection) {
+            try {
+                await connection.close()
+            } catch (err) {
+
+            }
+        }
+    }
+}
+
+
 module.exports = {
     initialize,
     closePool,
-    query
+    query,
+    executeMany
 }

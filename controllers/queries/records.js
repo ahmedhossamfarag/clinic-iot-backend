@@ -36,8 +36,8 @@ const selectRecent2Records = `
 
 
 const insertRecord = `
-    INSERT INTO records (router_id, patient_id, rssi)
-    SELECT :router_id, patient_id, :rssi
+    INSERT INTO records (id, router_id, patient_id, rssi)
+    SELECT :record_id, :router_id, patient_id, :rssi
     FROM devices
     WHERE devices.id = :device_id
 `;
