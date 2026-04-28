@@ -46,11 +46,13 @@ async function onMQTTMessage(topic, message) {
         const router_id = uuidToBuffer(data.router_id);
         const device_id = uuidToBuffer(data.device_id);
         const rssi = data.rssi;
+        console.log('Received MQTT message:', { router_id, device_id, rssi });
         const { error, rows } = await db.query(queries.selectRecent2Records, { device_id })
         if (!error)
           if (!rows.length) {
             // The device has no records yet. Insert a new record
             await db.query(queries.insertRecord, { router_id, device_id, rssi }, { autoCommit: true });
+            console.log('Inserted new record');
           } else {
             // The device has records.
             const timestamp = new Date(rows[0].TIMESTAMP);
@@ -60,20 +62,24 @@ async function onMQTTMessage(topic, message) {
               if (!router_id.equals(rows[0].ROUTER_ID) && rows[0].RSSI < rssi){
                 // Assign the record to the the router with the highest RSSI
                 await db.query(queries.updateRecord, { router_id, rssi, record_id: rows[0].ID }, { autoCommit: true });
+                console.log('Updated record with new Router ID and RSSI');
               }
             } else {
               // This is a new signal
               if (rows.length >= 2 && router_id.equals(rows[0].ROUTER_ID) && router_id.equals(rows[1].ROUTER_ID)) {
                 // The device has at least two consecutive records from the current router.
                 await db.query(queries.updateRecord, { router_id, rssi, record_id: rows[0].ID }, { autoCommit: true });
+                console.log('Updated record with new RSSI');
               } else {
                 // The device has only one record from the current router.
                 await db.query(queries.insertRecord, { router_id, device_id, rssi }, { autoCommit: true });
+                console.log('Inserted new record');
               }
             }
           }
       }
     } catch (error) {
+      console.error('Error processing MQTT message:', error);
     }
   }
 }
