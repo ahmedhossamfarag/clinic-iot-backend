@@ -4,6 +4,7 @@ const { validate } = require('uuid');
 const queries = require('../controllers/queries/records');
 const db = require('../services/oracle-db');
 const { uuidToBuffer } = require('../controllers/converters/converters')
+const { sendToAll } = require('./websocket');
 
 
 // Configuration
@@ -11,6 +12,7 @@ const { uuidToBuffer } = require('../controllers/converters/converters')
 const MQTT_BROKER = env.MQTT_BROKER;
 const MQTT_PORT = env.MQTT_PORT;
 const MQTT_TOPIC = env.MQTT_TOPIC;
+const MQTT_STATE_TOPIC = env.MQTT_STATE_TOPIC;
 const MQTT_USERNAME = env.MQTT_USERNAME;
 const MQTT_PASSWORD = env.MQTT_PASSWORD;
 const DEVICES_SIGNAL_PERIOD = env.DEVICES_SIGNAL_PERIOD;
@@ -24,11 +26,12 @@ const client = mqtt.connect(`${MQTT_BROKER}:${MQTT_PORT}`, {
 
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
-  client.subscribe(MQTT_TOPIC, (err) => {
+  client.subscribe([MQTT_TOPIC, MQTT_STATE_TOPIC], (err) => {
     if (err) {
       console.error('Error subscribing to topic:', err);
     } else {
       console.log('Subscribed to topic:', MQTT_TOPIC);
+      console.log('Subscribed to topic:', MQTT_STATE_TOPIC);
     }
   });
 });
@@ -73,6 +76,13 @@ async function onMQTTMessage(topic, message) {
             }
           }
       }
+    } catch (error) {
+    }
+  }
+
+  if (topic === MQTT_STATE_TOPIC) {
+    try{
+      sendToAll(message.toString());
     } catch (error) {
     }
   }

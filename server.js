@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./services/oracle-db');
 const authMiddleware = require('./middleware/auth');
+const { initWSServer } = require('./services/websocket');
+const { createServer } = require('http');
 
 // Configuration
 const SERVER_PORT = env.SERVER_PORT;
@@ -50,9 +52,12 @@ app.get('/', (req, res) => {
   app.use('/devices', authMiddleware, devicesRouter);
   app.use('/records', authMiddleware, recordsRouter);
 
+  const httpServer = createServer(app);
+  initWSServer(httpServer);
+
   // Start the server
 
-  app.listen(SERVER_PORT, SERVER_HOST, () => {
+  httpServer.listen(SERVER_PORT, SERVER_HOST, () => {
     console.log(`Server is running on ${SERVER_HOST}:${SERVER_PORT}`);
   });
 }
