@@ -1,6 +1,9 @@
+const env = process.env;
 const queries = require("../controllers/queries/routers");
 const db = require("../services/oracle-db");
 const { arrToBuffer, uuidToBuffer, bufferToUuid } = require("../controllers/converters/converters");
+
+const ROUTER_ACTIVE_INTERVAL = Number(env.ROUTER_ACTIVE_INTERVAL);
 
 async function getAllRouters(req, res) {
     try {
@@ -85,6 +88,19 @@ async function getRouterHourlySessionsDuration(req, res) {
     }
 }
 
+async function getActiveRouters(req, res) {
+    try {
+        const hospital_id = arrToBuffer(req.hospital.id.data);
+        const result = await db.query(queries.selectActiveRouters, { hospital_id, active_interval: ROUTER_ACTIVE_INTERVAL });
+        if (result.error) {
+            throw result.error;
+        }
+        res.json({ routers: result.rows });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to get active routers' });
+    }
+}
+
 async function insertRouter(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
@@ -108,6 +124,7 @@ async function insertRouter(req, res) {
 module.exports = {
     getAllRouters,
     getRoutersMap,
+    getActiveRouters,
     getRouterById,
     getRouterConnectedDevices,
     getRouterHourlySessionsDuration,

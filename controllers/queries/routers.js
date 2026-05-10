@@ -40,6 +40,24 @@ const selectRouterByName = `
     AND hospital_id = :hospital_id
 `;
 
+const selectActiveRouters = `
+    SELECT
+        raw_to_uuid(id) AS "id",
+        name AS "name",
+        location_x AS "location_x",
+        location_y AS "location_y",
+        last_active AS "last_active"
+    FROM routers
+    WHERE hospital_id = :hospital_id
+    AND last_active >= SYSDATE - :active_interval / 86400
+`;
+
+const updateRouterLastActive = `
+    UPDATE routers
+    SET last_active = CURRENT_TIMESTAMP
+    WHERE id = :router_id
+`;
+
 const selectRouterConnectedDevices = `
     SELECT
         raw_to_uuid(id) AS "id",
@@ -72,6 +90,8 @@ module.exports = {
     selectRouterById,
     selectRouterByName,
     selectRouterConnectedDevices,
+    selectActiveRouters,
+    updateRouterLastActive,
     insertRouter,
     deleteRouters
 };
