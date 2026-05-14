@@ -34,7 +34,7 @@ async function getRoutersMap(req, res) {
 async function getRouterById(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const router_id = uuidToBuffer(req.params.id);
+        const router_id = req.params.id;
         const result = await db.query(queries.selectRouterById, { router_id, hospital_id });
         if (result.error) {
             throw result.error;
@@ -56,7 +56,7 @@ async function getRouterById(req, res) {
 async function getRouterConnectedDevices(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const router_id = uuidToBuffer(req.params.id);
+        const router_id = req.params.id;
         const result = await db.query(queries.selectRouterConnectedDevices, { router_id, hospital_id }, { maxRows: 100 });
         if (result.error) {
             throw result.error;
@@ -70,7 +70,7 @@ async function getRouterConnectedDevices(req, res) {
 async function getRouterHourlySessionsDuration(req, res) {
     try {
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const router_id = uuidToBuffer(req.params.id);
+        const router_id = req.params.id;
         // Check if router exists and belongs to the hospital
         const existsResult = await db.query(queries.selectRouterById, { router_id, hospital_id });
         if (existsResult.error || !existsResult.rows.length) {
@@ -111,7 +111,7 @@ async function insertRouter(req, res) {
             return res.status(400).json({ error: 'Router name already exists' });
         }
         // Insert router
-        const result = await db.query(queries.insertRouter, { hospital_id, router_id: uuidToBuffer(router_id), name, location_x, location_y }, { autoCommit: true });
+        const result = await db.query(queries.insertRouter, { hospital_id, router_id, name, location_x, location_y }, { autoCommit: true });
         if (result.error) {
             throw result.error;
         }

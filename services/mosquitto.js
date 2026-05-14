@@ -4,7 +4,6 @@ const { validate } = require('uuid');
 const recordQueries = require('../controllers/queries/records');
 const routerQueries = require('../controllers/queries/routers');
 const db = require('../services/oracle-db');
-const { uuidToBuffer } = require('../controllers/converters/converters')
 
 
 // Configuration
@@ -54,8 +53,8 @@ async function onMQTTMessage(topic, message) {
   try {
     const data = JSON.parse(message.toString());
     if (data && validate(data.router_id) && validate(data.device_id) && typeof data.rssi === 'number') {
-      const router_id = uuidToBuffer(data.router_id);
-      const device_id = uuidToBuffer(data.device_id);
+      const router_id = data.router_id;
+      const device_id = data.device_id;
       const rssi = data.rssi;
       const { error, rows } = await db.query(recordQueries.selectRecent2Records, { device_id })
       if (!error)
@@ -92,7 +91,7 @@ async function onRouterActiveMessage(message) {
   try {
     const data = JSON.parse(message.toString());
     if (data && validate(data.router_id) && data.status === 'active') {
-      const router_id = uuidToBuffer(data.router_id);
+      const router_id = data.router_id;
       await db.query(routerQueries.updateRouterLastActive, { router_id }, { autoCommit: true });
     }
   } catch (error) {

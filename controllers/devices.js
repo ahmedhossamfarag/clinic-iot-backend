@@ -38,7 +38,7 @@ async function insertDevice(req, res) {
             return res.status(400).json({ error: 'Device name already exists' });
         }
         // Insert device
-        const result = await db.query(queries.insertDevice, { hospital_id, device_id: uuidToBuffer(device_id), name }, { autoCommit: true });
+        const result = await db.query(queries.insertDevice, { hospital_id, device_id, name }, { autoCommit: true });
         if (result.error) {
             throw result.error;
         }
@@ -51,7 +51,7 @@ async function insertDevice(req, res) {
 async function releaseDevice(req, res) {
     try{
         const hospital_id = arrToBuffer(req.hospital.id.data);
-        const device_id = uuidToBuffer(req.params.id);
+        const device_id = req.params.id;
         const result = await db.query(queries.updateDeviceHolder, { device_id, hospital_id, patient_id: null}, { autoCommit: true });
         if (result.error) {
             throw result.error;

@@ -54,7 +54,7 @@ const updateRecord = `
 // Per-room: unique patients per hour of day (0–23), across all days
 const selectRoomsHourlyOccupancy = `
     SELECT
-        raw_to_uuid(rec.router_id) AS "router_id",
+        rec.router_id AS "router_id",
         r.name                     AS "router_name",
         EXTRACT(HOUR FROM rec.timestamp) AS "hour_of_day",
         COUNT(DISTINCT rec.patient_id)   AS "patient_count"
@@ -68,7 +68,7 @@ const selectRoomsHourlyOccupancy = `
 // Per-room: avg dwell time + total sessions, ranked by highest avg dwell
 const selectRoomsDwellTime = `
     SELECT
-        raw_to_uuid(prs.router_id)        AS "router_id",
+        prs.router_id        AS "router_id",
         r.name                            AS "router_name",
         COUNT(*)                          AS "total_sessions",
         ROUND(AVG(prs.duration_seconds))  AS "avg_dwell_seconds",
@@ -85,7 +85,7 @@ const selectPatientsRoomStats = `
     SELECT
         raw_to_uuid(prs.patient_id)       AS "patient_id",
         p.name                            AS "patient_name",
-        raw_to_uuid(prs.router_id)        AS "router_id",
+        prs.router_id                     AS "router_id",
         r.name                            AS "router_name",
         COUNT(*)                          AS "visit_count",
         ROUND(SUM(prs.duration_seconds))  AS "total_seconds",

@@ -1,6 +1,6 @@
 const selectRouters = `
     SELECT
-        raw_to_uuid(id) AS "id",
+        id AS "id",
         name as "name",
         location_x as "location_x",
         location_y as "location_y"
@@ -10,7 +10,7 @@ const selectRouters = `
 
 const selectRoutersMap = `
     SELECT
-        raw_to_uuid(id) AS "id",
+        id AS "id",
         location_x as "location_x",
         location_y as "location_y",
         connected_devices_count as "connected_devices_count"
@@ -20,7 +20,7 @@ const selectRoutersMap = `
 
 const selectRoutersHourlySessions = `
     SELECT
-        raw_to_uuid(router_id) AS "router_id",
+        router_id AS "router_id",
         hour AS "hour",
         sessions_count AS "sessions_count",
         average_session_duration AS "average_session_duration"
@@ -42,7 +42,7 @@ const selectRouterByName = `
 
 const selectActiveRouters = `
     SELECT
-        raw_to_uuid(id) AS "id",
+        id AS "id",
         name AS "name",
         location_x AS "location_x",
         location_y AS "location_y",
@@ -60,9 +60,9 @@ const updateRouterLastActive = `
 
 const selectRouterConnectedDevices = `
     SELECT
-        raw_to_uuid(id) AS "id",
+        id AS "id",
         name AS "name",
-        raw_to_uuid(router_id) AS "router_id",
+        router_id AS "router_id",
         router_name AS "router_name",
         holder_name AS "holder_name",
         last_record_timestamp AS "last_record_timestamp"
