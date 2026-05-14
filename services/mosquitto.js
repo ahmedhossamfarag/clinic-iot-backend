@@ -1,10 +1,9 @@
 const env = process.env;
 const mqtt = require('mqtt');
-const { validate } = require('uuid');
 const recordQueries = require('../controllers/queries/records');
 const routerQueries = require('../controllers/queries/routers');
 const db = require('../services/oracle-db');
-
+const { isValidMac  } = require('../utils/mac');
 
 // Configuration
 
@@ -52,7 +51,7 @@ client.on('message', (topic, message) => {
 async function onMQTTMessage(topic, message) {
   try {
     const data = JSON.parse(message.toString());
-    if (data && validate(data.router_id) && validate(data.device_id) && typeof data.rssi === 'number') {
+    if (data && isValidMac(data.router_id) && isValidMac(data.device_id) && typeof data.rssi === 'number') {
       const router_id = data.router_id;
       const device_id = data.device_id;
       const rssi = data.rssi;
@@ -90,7 +89,7 @@ async function onMQTTMessage(topic, message) {
 async function onRouterActiveMessage(message) {
   try {
     const data = JSON.parse(message.toString());
-    if (data && validate(data.router_id) && data.status === 'active') {
+    if (data && isValidMac(data.router_id) && data.status === 'active') {
       const router_id = data.router_id;
       await db.query(routerQueries.updateRouterLastActive, { router_id }, { autoCommit: true });
     }
