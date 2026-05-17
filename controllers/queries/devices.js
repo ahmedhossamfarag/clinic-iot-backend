@@ -43,6 +43,21 @@ const updateDeviceHolder = `
     AND hospital_id = :hospital_id
 `;
 
+const updateDeviceName = `
+    UPDATE devices
+    SET name = :name
+    WHERE id = :device_id
+    AND hospital_id = :hospital_id
+`;
+
+// Name uniqueness check that excludes the device being renamed
+const selectDeviceByNameExcluding = `
+    SELECT id FROM devices
+    WHERE name = :name
+    AND hospital_id = :hospital_id
+    AND id != :device_id
+`;
+
 const deleteDevices = `
     DELETE FROM devices
     WHERE hospital_id = :hospital_id
@@ -54,7 +69,9 @@ module.exports = {
     selectDevicesRouters,
     selectDeviceById,
     selectDeviceByName,
+    selectDeviceByNameExcluding,
     insertDevice,
     updateDeviceHolder,
+    updateDeviceName,
     deleteDevices
 };
